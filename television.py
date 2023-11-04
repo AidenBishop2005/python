@@ -1,50 +1,52 @@
 class Television:
-  MIN_VOLUME = 0
-  MAX_VOLUME = 2
-  MIN_CHANNEL = 0
-  MAX_CHANNEL = 3
+    """Represents a television."""
 
-  def __init__(self):
-    self.__status = False
-    self.__muted = False
-    self.__volume = Television.MIN_VOLUME
-    self.__channel = Television.MIN_CHANNEL
+    MIN_VOLUME: int = 0  # Minimum volume level
+    MAX_VOLUME: int = 2  # Maximum volume level
+    MIN_CHANNEL: int = 0  # Minimum channel number
+    MAX_CHANNEL: int = 3  # Maximum channel number
 
-  def power(self):
-    if self.__status == True:
-      self.__status = False
-    else:
-      self.__status = True
-  
-  def mute(self):
-    if self.__muted == True:
-      self.__muted = False
-    else:
-      self.__muted = True
+    def __init__(self) -> None:
+        """Initializes a new television object."""
+        self.__status: bool = False  # TV power status (on/off)
+        self.__muted: bool = False  # Mute status (muted/unmuted)
+        self.__volume: int = Television.MIN_VOLUME  # Current volume level
+        self.__channel: int = Television.MIN_CHANNEL  # Current channel number
 
-  def channel_up(self):
-    if self.__status == True:
-      if self.__channel == Television.MAX_CHANNEL:
-        self.__channel = Television.MIN_CHANNEL
-      else:
-        self.__channel += 1
-  
-  def channel_down(self):
-    if self.__status == True:
-      if self.__channel == Television.MIN_CHANNEL:
-        self.__channel = Television.MAX_CHANNEL
-      else:
-        self.__channel -= 1
+    def power(self) -> None:
+        """Toggles the TV power status (on/off)."""
+        self.__status = not self.__status
 
-  def volume_up(self):
-    if self.__status == True:
-      if self.__volume < Television.MAX_VOLUME:
-        self.__volume += 1
-  
-  def volume_down(self):
-    if self.__status == True:
-      if self.__volume > Television.MIN_VOLUME:
-        self.__volume -= 1
+    def mute(self) -> None:
+        """Toggles the mute status (muted/unmuted)."""
+        self.__muted = not self.__muted
 
-  def __str__(self):
-    return f"Power = {self.__status}, Channel = {self.__channel}, Volume = {self.__volume}"
+    def channel_up(self) -> None:
+        """Changes the channel to the next higher channel number."""
+        if self.__status:
+            if self.__channel == Television.MAX_CHANNEL:
+                self.__channel = Television.MIN_CHANNEL
+            else:
+                self.__channel += 1
+
+    def channel_down(self) -> None:
+        """Changes the channel to the next lower channel number."""
+        if self.__status:
+            if self.__channel == Television.MIN_CHANNEL:
+                self.__channel = Television.MAX_CHANNEL
+            else:
+                self.__channel -= 1
+
+    def volume_up(self) -> None:
+        """Increases the volume by one level."""
+        if self.__status and self.__volume < Television.MAX_VOLUME:
+            self.__volume += 1
+
+    def volume_down(self) -> None:
+        """Decreases the volume by one level."""
+        if self.__status and self.__volume > Television.MIN_VOLUME:
+            self.__volume -= 1
+
+    def __str__(self) -> str:
+        """Returns a string representation of the television's state."""
+        return f"Power = {self.__status}, Channel = {self.__channel}, Volume = {self.__volume}"
