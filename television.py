@@ -12,6 +12,7 @@ class Television:
         self.__muted: bool = False  # Mute status (muted/unmuted)
         self.__volume: int = Television.MIN_VOLUME  # Current volume level
         self.__channel: int = Television.MIN_CHANNEL  # Current channel number
+        self.__previous_volume: int = 0  # Temporary variable to store previous volume
 
     def power(self) -> None:
         """Toggles the TV power status (on/off)."""
@@ -19,7 +20,16 @@ class Television:
 
     def mute(self) -> None:
         """Toggles the mute status (muted/unmuted)."""
-        self.__muted = not self.__muted
+        if self.__status:
+            if self.__muted:
+                # Unmute and restore previous volume
+                self.__muted = False
+                self.__volume = self.__previous_volume
+            else:
+                # Save current volume and mute the TV
+                self.__muted = True
+                self.__previous_volume = self.__volume
+                self.__volume = 0  # Mute by setting volume to zero
 
     def channel_up(self) -> None:
         """Changes the channel to the next higher channel number."""
@@ -39,12 +49,12 @@ class Television:
 
     def volume_up(self) -> None:
         """Increases the volume by one level."""
-        if self.__status and self.__volume < Television.MAX_VOLUME:
+        if self.__status and self.__volume < Television.MAX_VOLUME and not self.__muted:
             self.__volume += 1
 
     def volume_down(self) -> None:
         """Decreases the volume by one level."""
-        if self.__status and self.__volume > Television.MIN_VOLUME:
+        if self.__status and self.__volume > Television.MIN_VOLUME and not self.__muted:
             self.__volume -= 1
 
     def __str__(self) -> str:

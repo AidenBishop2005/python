@@ -1,78 +1,88 @@
 import pytest
-from television import Television
+from television import *
 
+class Test:
+    def setup_method(self):
+        self.tv = Television()
 
-def test_init():
-    tv = Television()
-    assert tv.status is False
-    assert tv.muted is False
-    assert tv.volume == Television.MIN_VOLUME
-    assert tv.channel == Television.MIN_CHANNEL
+    def teardown_method(self):
+        del self.tv
 
+    def test_init(self):
+        assert self.tv.__str__() == "Power = False, Channel = 0, Volume = 0"
 
-def test_power():
-    tv = Television()
-    tv.power()
-    assert tv.status is True
+    def test_power(self):
+        self.tv.power()
+        assert self.tv.__str__() == "Power = True, Channel = 0, Volume = 0"
 
-    tv.power()
-    assert tv.status is False
+        self.tv.power()
+        assert self.tv.__str__() == "Power = False, Channel = 0, Volume = 0"
 
+    def test_mute(self):
+        self.tv.power()
+        self.tv.mute() #mute
+        self.tv.volume_up()
+        assert self.tv.__str__() == "Power = True, Channel = 0, Volume = 0"
+        self.tv.mute() #unmute
+        self.tv.volume_up()
+        self.tv.mute() #mute
+        assert self.tv.__str__() == "Power = True, Channel = 0, Volume = 0"
+        self.tv.mute()
+        assert self.tv.__str__() == "Power = True, Channel = 0, Volume = 1"
 
-def test_mute():
-    tv = Television()
-    tv.mute()
-    assert tv.muted is True
+    def test_channel_up(self):
+        self.tv.power()
+        self.tv.channel_up()
+        assert self.tv.__str__() == "Power = True, Channel = 1, Volume = 0"
 
-    tv.mute()
-    assert tv.muted is False
+        for _ in range(Television.MAX_CHANNEL):
+            self.tv.channel_up()
 
+        assert self.tv.__str__() == "Power = True, Channel = 0, Volume = 0"
 
-def test_channel_up():
-    tv = Television()
-    tv.channel_up()
-    assert tv.channel == Television.MIN_CHANNEL + 1
+        self.tv.power()
+        self.tv.channel_up()
+        assert self.tv.__str__() == "Power = False, Channel = 0, Volume = 0"
 
-    for _ in range(Television.MAX_CHANNEL - Television.MIN_CHANNEL):
-        tv.channel_up()
+    def test_channel_down(self):
+        self.tv.power()
+        self.tv.channel_down()
+        self.tv.channel_down()
+        assert self.tv.__str__() == "Power = True, Channel = 2, Volume = 0"
 
-    tv.channel_up()
-    assert tv.channel == Television.MIN_CHANNEL
+        for _ in range(Television.MAX_CHANNEL):
+            self.tv.channel_down()
 
+        assert self.tv.__str__() == "Power = True, Channel = 3, Volume = 0"
 
-def test_channel_down():
-    tv = Television()
-    tv.channel = Television.MAX_CHANNEL
-    tv.channel_down()
-    assert tv.channel == Television.MAX_CHANNEL - 1
+        self.tv.power()
+        self.tv.channel_down()
+        assert self.tv.__str__() == "Power = False, Channel = 3, Volume = 0"
 
-    for _ in range(Television.MAX_CHANNEL - Television.MIN_CHANNEL):
-        tv.channel_down()
+    def test_volume_up(self):
+        self.tv.power()
+        self.tv.volume_up()
+        assert self.tv.__str__() == "Power = True, Channel = 0, Volume = 1"
 
-    tv.channel_down()
-    assert tv.channel == Television.MAX_CHANNEL
+        for _ in range(Television.MAX_VOLUME):
+            self.tv.volume_up()
 
+        self.tv.volume_up()
+        assert self.tv.__str__() == "Power = True, Channel = 0, Volume = 2"
 
-def test_volume_up():
-    tv = Television()
-    tv.volume_up()
-    assert tv.volume == Television.MIN_VOLUME + 1
+        self.tv.volume_down()
+        self.tv.power()
+        self.tv.volume_up()
 
-    for _ in range(Television.MAX_VOLUME):
-        tv.volume_up()
+        assert self.tv.__str__() == "Power = False, Channel = 0, Volume = 1"
 
-    tv.volume_up()
-    assert tv.volume == Television.MIN_VOLUME
+    def test_volume_down(self):
+        self.tv.power()
+        self.tv.volume_down()
+        assert self.tv.__str__() == "Power = True, Channel = 0, Volume = 0"
 
+        for _ in range(Television.MAX_VOLUME):
+            self.tv.volume_up()
 
-def test_volume_down():
-    tv = Television()
-    tv.volume = Television.MAX_VOLUME
-    tv.volume_down()
-    assert tv.volume == Television.MAX_VOLUME - 1
-
-    for _ in range(Television.MAX_VOLUME - Television.MIN_VOLUME):
-        tv.volume_down()
-
-    tv.volume_down()
-    assert tv.volume == Television.MAX_VOLUME
+        self.tv.volume_down()
+        assert self.tv.__str__() == "Power = True, Channel = 0, Volume = 1"
